@@ -1,24 +1,19 @@
-import Point2D
+import myLog
 import logging
-import logging.handlers
-import datetime
-import numpy
 
+from Environment import Environment
+from GA import GA
 
 ### 创建日志文件 ###
-def initLogging(logFilename):
-  """Init for logging"""
-  logging.basicConfig(
-                    level    = logging.DEBUG,
-                    format='%(asctime)s-%(levelname)s-%(message)s',
-                    datefmt  = '%y-%m-%d %H:%M',
-                    filename = logFilename,
-                    filemode = 'w');
-  console = logging.StreamHandler()
-  console.setLevel(logging.INFO)
-  formatter = logging.Formatter('%(asctime)s-%(levelname)s-%(message)s')
-  console.setFormatter(formatter)
-  logging.getLogger('').addHandler(console)
-
-initLogging('myLog.log')
+myLog.initLogging('myLog.log')
 logging.info('Log Start!')
+
+### 环境初始化 ###
+env = Environment()
+env.Initialize()
+env.displayEnvironment()
+
+### 遗传算法 ###
+m_GA = GA(env, 100, 100, 0.1, 0.01, 0.3)
+m_GA.Run()
+m_GA.Display()

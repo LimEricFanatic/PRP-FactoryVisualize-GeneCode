@@ -14,11 +14,10 @@ class Building:
         print("Total Building Count: %d" % Building.buildingCount)
 
     def displayBuilding(self):
-        print("Name: ", self.name, ", Position: ", self.position, \
-              ", Movable? ", self.movable)
+        print("Name: ", self.name, ", Position: ", self.position)
 
 
-# testbuilding = Building('Factory', Point2D(1,1), True)
+# testbuilding = Building('Factory', Point2D(1,1))
 # testbuilding.displayBuilding()
 
 class Depot(Building):
