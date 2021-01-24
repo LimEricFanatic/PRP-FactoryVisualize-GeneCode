@@ -108,7 +108,7 @@ class Rat:
             print("Agent %s\tPlan %s" % (str(chrome.agent_number), str(name_list)))
         print("Cost %f" % self.fitness)
 
-    def BestRatDisplay(self):
+    def BestRatDisplay_log(self):
         logging.debug("---Best Rat Display---(%s)" % str(self.name))
         for chrome in self.chrome_list:
             name_list = []

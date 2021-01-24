@@ -2,7 +2,7 @@ import myLog
 import logging
 
 from Environment import Environment
-from GA import GA
+from GASA import GASA
 
 ### 创建日志文件 ###
 myLog.initLogging('myLog.log')
@@ -14,6 +14,6 @@ env.Initialize()
 env.displayEnvironment()
 
 ### 遗传算法 ###
-m_GA = GA(env, 50, 50, 0.1, 0.01, 0.3)
-m_GA.Run()
-m_GA.Display()
+m_GASA = GASA(env, 20, 50, 0.3, 0.01, 100, 1, 0.7)
+m_GASA.Run()
+m_GASA.Display()
