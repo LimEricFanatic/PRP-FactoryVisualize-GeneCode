@@ -14,6 +14,6 @@ env.Initialize()
 env.displayEnvironment()
 
 ### 遗传算法 ###
-m_GA = GA(env, 100, 100, 0.1, 0.01, 0.3)
+m_GA = GA(env, 50, 50, 0.1, 0.01, 0.3)
 m_GA.Run()
 m_GA.Display()

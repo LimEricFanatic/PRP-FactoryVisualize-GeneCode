@@ -10,19 +10,19 @@ class Point2D:
         return 'Point2D (%f, %f)' % (self.x, self.y)
 
     def __add__(self, other):
-        return Point2D(self.x + other.x, self.y + \
-                       other.y)
+        return Point2D(self.x + other.x, self.y + other.y)
 
     def __sub__(self, other):
-        return Point2D(self.x - other.x, self.y - \
-                       other.y)
+        return Point2D(self.x - other.x, self.y - other.y)
 
     def __mul__(self, other):
-        return Point2D(self.x * other.x, self.y * \
-                       other.y)
+        return Point2D(self.x * other.x, self.y * other.y)
 
     def __truediv__(self, other):
         return Point2D(self.x / other.x, self.y / other.y)
+
+    def __abs__(self):
+        return math.sqrt(self.x ** 2 + self.y ** 2)
 
     def normalization(self):
         mod = math.sqrt(self.x ** 2 + self.y ** 2)
