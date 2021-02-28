@@ -96,26 +96,31 @@ class Rat:
             name_list = []
             for building in chrome.path:
                 name_list.append(str(building))
-            logging.debug("Agent %s\tPlan %s" % (str(chrome.agent_number), str(name_list)))
-        logging.debug("Cost %f" % self.fitness)
+            logging.debug("Agent %s\tPlan %s\t Work duration: %s\t Travel Distance: %s" % (str(chrome.agent_number), str(name_list), str(chrome.work_duration), str(chrome.travel_distance)))
+        logging.debug("Total Cost %f" % self.fitness)
 
     def Display(self):
         print("---Rat Display---(%s)" % str(self.name))
         for chrome in self.chrome_list:
             name_list = []
+            meet_position_list = []
             for building in chrome.path:
                 name_list.append(str(building))
-            print("Agent %s\tPlan %s" % (str(chrome.agent_number), str(name_list)))
+            for position in chrome.meet_position:
+                meet_position_list.append(str(position))
+            print("Agent %s\tPlan %s\t Work duration: %s\t Travel Distance: %s" % (str(chrome.agent_number), str(name_list), str(chrome.work_duration), str(chrome.travel_distance)))
+            print("Agent %s\tMEET position: %s" % (str(chrome.agent_number), str(meet_position_list)))
         print("Cost %f" % self.fitness)
 
     def BestRatDisplay_log(self):
         logging.debug("---Best Rat Display---(%s)" % str(self.name))
         for chrome in self.chrome_list:
             name_list = []
+            meet_position_list = []
             for building in chrome.path:
                 name_list.append(str(building))
-
-            logging.debug("Agent 0%s\tGene List: %s" % (chrome.agent_number, str(chrome.gene_list)))
-            logging.debug("Agent %s\tPlan %s" % (str(chrome.agent_number), str(name_list)))
-            logging.debug("Agent %s\tPATH %s" % (str(chrome.agent_number), str(chrome.path)))
-        logging.debug("Cost %f" % self.fitness)
+            for position in chrome.meet_position:
+                meet_position_list.append(str(position))
+            logging.debug("Agent %s\tPlan %s\t Work duration: %s\t Travel Distance: %s" % (str(chrome.agent_number), str(name_list), str(chrome.work_duration), str(chrome.travel_distance)))
+            logging.debug("Agent %s\tMEET position: %s" % (str(chrome.agent_number), str(meet_position_list)))
+        logging.debug("Total Cost %f" % self.fitness)

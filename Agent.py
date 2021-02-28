@@ -27,7 +27,7 @@ class GoodAgent(Agent):
 
     def __init__(self, name="GoodAgent", start_depot=Depot()):
         Agent.__init__(self, name, start_depot)
-        self.velocity = 10
+        self.velocity = 5
         self.com_max = 50
         self.travel_cost = 10
         self.repair_cost = 10
@@ -56,7 +56,7 @@ class BadAgent(Agent):
 
     def __init__(self, name="BadAgent", start_depot=Depot()):
         Agent.__init__(self, name, start_depot)
-        self.velocity = 5
+        self.velocity = 3
         self.com_max = 30
         self.travel_cost = 5    # per distance
         self.repair_cost = 5

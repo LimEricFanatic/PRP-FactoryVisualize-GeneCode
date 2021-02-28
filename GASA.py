@@ -30,6 +30,7 @@ class GASA:
         self.rat_list = []
         self.rat_best = Rat(self.env)
         self.best_cost_list = []
+        self.best_in_history = Rat(self.env)
 
     def Run(self):
         """execute function"""
@@ -47,8 +48,9 @@ class GASA:
         """display function"""
         print("POP SIZE: %d" % (len(self.rat_list)))
         print("---Best Rat---")
-        self.rat_best.Display()
-        self.rat_best.Display_log()
+        self.best_in_history.Display()
+        self.best_in_history.Display_log()
+
 
         # Pyplot制图
         x = np.arange(1, self.max_gen+1)
@@ -63,6 +65,8 @@ class GASA:
             rat = Rat(env)
             rat.Initialize(self.env.depot_num, self.env.factory_num, self.env.agent_num, self.env)
             self.rat_list.append(rat)
+        self.best_in_history = self.rat_list[0].Copy()
+        self.best_in_history.Fitness_calculation()
 
     def Crossover_and_Mutation(self):
         logging.debug("------Crossover and Mutate begin------")
@@ -213,6 +217,10 @@ class GASA:
         self.rat_list.append(self.rat_best)
         self.best_cost_list.append(self.rat_best.fitness)
         logging.debug("After replace, rat num is %d" % len(self.rat_list))
+        if self.rat_best.fitness < self.best_in_history.fitness:
+            self.best_in_history = self.rat_best.Copy()
+            logging.debug("Better RAT appear!")
+            self.best_in_history.Display_log
 
     def SA_deal(self, parent_rat, son_rat, T):
         logging.debug("SA_deal. Parent: %s\t Son: %s" % (parent_rat.name, son_rat.name))

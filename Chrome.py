@@ -18,6 +18,7 @@ class Chrome:
 
         self.path = []
         self.gene_list = []
+        self.meet_position = []
 
         Chrome.chromeCount += 1
 
@@ -33,6 +34,8 @@ class Chrome:
         n_Chrome = Chrome(self.agent_number)
         for gene in self.gene_list:
             n_Chrome.gene_list.append(gene)
+        for position in self.meet_position:
+            n_Chrome.meet_position.append(position)
         n_Chrome.cost = self.cost
         n_Chrome.work_duration = self.work_duration
         n_Chrome.travel_distance = self.travel_distance
@@ -60,6 +63,7 @@ class Chrome:
         self.travel_distance = 0
         self.work_duration = 0
         self.path = []
+        self.meet_position = []
 
         agent = env.agent_list[self.agent_number].Copy()
         plan = []  # 实体形式
@@ -101,6 +105,7 @@ class Chrome:
     def Cost_update(self, agent, target, final_flag=False):
         logging.debug("---Cost Update---")
         if isinstance(target, Depot):   #目标为车场类型
+            self.meet_position.append(target.position)
             self.travel_distance += abs(agent.position - target.position)
             self.work_duration += (abs(agent.position - target.position) / agent.velocity)
             self.cost += self.travel_distance * agent.travel_cost
@@ -119,7 +124,9 @@ class Chrome:
             self.work_duration += travel_duration
             self.travel_distance += (travel_duration * agent.velocity)
             self.cost += (travel_duration * agent.velocity * agent.travel_cost)
-            agent.position = target.position
+            agent.position = target.Get_position(self.work_duration)
+            self.meet_position.append(agent.position)
+            logging.debug("MEET POSITION APPEND:" + str(agent.position))
             # Repair
             agent.com_num -= target.com_need
             self.cost += (agent.repair_cost + abs(self.work_duration - target.bro_time) * target.punish_factor) # 立即维护，惩罚成本
@@ -141,6 +148,8 @@ class Chrome:
         if x < 0:
             logging.error("No feasible solve! solve < 0")
             exit()
+        if x == 0:
+            return 0
         travel_duration = abs(relative_vector) / x
         return travel_duration
 
