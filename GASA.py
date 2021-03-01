@@ -39,8 +39,9 @@ class GASA:
         for i in trange(self.max_gen):
             time.sleep(0.01)
             # logging.info("\n------This is the %d generation------" % i)
+            random.shuffle(self.rat_list)
             self.Crossover_and_Mutation()
-            self.Select()
+            # self.Select()
             self.Elite_select()
             self.rat_best.BestRatDisplay_log()
 
@@ -53,10 +54,43 @@ class GASA:
 
 
         # Pyplot制图
-        x = np.arange(1, self.max_gen+1)
-        y = self.best_cost_list
+        plt.figure(("遗传算法收敛图"))
+        x1 = np.arange(1, self.max_gen+1)
+        y1 = self.best_cost_list
         plt.title("GA Best Fitness Curve")
-        plt.plot(x, y)
+        plt.plot(x1, y1)
+
+        plt.figure("路径图")
+        colorlist= ["blue", "green", "yellow", "purple", "black"]
+        depot_colorlist = ["navy","brown","deeppink"]
+        markers = ["D", "x", "h", ".", "^", ">", "v"]
+        for i in range(len(self.env.depot_list)):
+            print("%s\t%s" % (self.env.depot_list[i].position.x, self.env.depot_list[i].position.y))
+            plt.scatter(self.env.depot_list[i].position.x, self.env.depot_list[i].position.y, color=depot_colorlist[i], s=200, label="Depot" +str(i))
+        x_list = []
+        y_list = []
+        label_list = []
+        for chrome in self.rat_best.chrome_list:
+            label_list.append(chrome.agent_number)
+            n_list_x = []
+            n_list_y = []
+            n_list_x.append(self.env.agent_list[chrome.agent_number].start_depot.position.x)
+            n_list_y.append(self.env.agent_list[chrome.agent_number].start_depot.position.y)
+            for pos in chrome.meet_position:
+                n_list_x.append(pos.x)
+                n_list_y.append(pos.y)
+            x_list.append(n_list_x)
+            y_list.append(n_list_y)
+        for i in range(len(label_list)):
+            for j in range(len(x_list[i])):
+                # print(str(x_list[i][j]) + "\t" +str(y_list[i][j]) + "\t" + str(x_list[i][j+1]) + "\t" + str(y_list[i][j+1]))
+                plt.arrow(x_list[i][j], y_list[i][j], x_list[i][j+1]-x_list[i][j], y_list[i][j+1]-y_list[i][j],head_width=3, lw=2, color=colorlist[i])
+                plt.text(x_list[i][j], y_list[i][j], s=j, fontsize=8, color='red')  # ⽂本
+                if j == len(x_list[i])-2:
+                    # plt.text(x_list[i][j], y_list[i][j], s=j, fontsize=8, color='red')  # ⽂本
+                    break
+        plt.legend()
+
         plt.show()
 
     def Initialize(self, max_gen, env):
@@ -71,30 +105,28 @@ class GASA:
     def Crossover_and_Mutation(self):
         logging.debug("------Crossover and Mutate begin------")
         rat_num = len(self.rat_list)
-        for i in range(rat_num):
-            for j in range(i + 1, rat_num):
+        T = self.T_max
+        while T >= self.T_min:
+            logging.debug("Temperature MAX\t now %f" % T)
+            # crossover
+            for i in range(rat_num-1):
+                j = i + 1
                 if random.random() < self.cross_rate:
                     logging.debug("Total Rat is %d\tRatA index %d\tRatB index %d" % (len(self.rat_list), i, j))
-                    # GASA START
-                    T = self.T_max
-                    logging.debug("Temperature MAX\t now %f" % T)
-                    while T >= self.T_min:
-                        ratA, ratB = self.Crossover(self.rat_list[i], self.rat_list[j], T)
-                        m_ratA, m_ratB = self.Mutate(ratA, ratB, T)
-                        T *= self.SA_rate
-                        logging.debug("Now Temperature is %f" % T)
-                    self.rat_list.append(m_ratA)
-                    self.rat_list.append(m_ratB)
-                    logging.debug("---After SA, RAT info---")
-                    m_ratA.Display_log()
-                    m_ratB.Display_log()
-                    logging.debug("Temperature < T_min, SA END")
+                    self.Crossover(self.rat_list[i], self.rat_list[j], T, i, j)
+            # mutate
+            for i in range(rat_num):
+                if random.random() < self.mutate_rate:
+                    logging.debug("Mutate Index:%d" % i)
+                    self.Mutate(self.rat_list[i], T, i)
+            T *= self.SA_rate
+            logging.debug("Now Temperature is %f" % T)
+        logging.debug("Temperature < T_min, SA END")
 
-    def Crossover(self, rat_A, rat_B, T):
-        """对A，B个体进行操作，注意要改变个体本身，要产生新个体"""
+    def Crossover(self, rat_A, rat_B, T, index_a, index_b):
+        """对A，B个体进行操作，注意要改变个体本身，不产生新个体"""
         logging.debug("---Crossover Begin---(%s, %s)" % (rat_A.name, rat_B.name))
         chrome_number = random.choice(range(self.env.agent_num))
-        logging.debug("crossover number is: %d" % chrome_number)
         n_rat_A = rat_A.Copy()
         n_rat_B = rat_B.Copy()
         a = n_rat_A.chrome_list[chrome_number]
@@ -103,7 +135,7 @@ class GASA:
         b.Display_log()
         if len(a.gene_list) == 0 and len(b.gene_list) == 0:
             logging.debug("No gene exist in these chromes, RETRY!")
-            return self.Crossover(n_rat_A, n_rat_B, T)
+            return
         F_ab = [x for x in a.gene_list if x in b.gene_list]
         F_a = [y for y in a.gene_list if y not in F_ab]
         F_b = [z for z in b.gene_list if z not in F_ab]
@@ -113,8 +145,6 @@ class GASA:
         rat_A.Display_log()
         rat_B.Display_log()
 
-        # self.rat_list.append(n_rat_A)
-        # self.rat_list.append(n_rat_B)
         logging.debug("After Duplicate, rat num is: %d" % len(self.rat_list))
 
         logging.debug("---Before Switch--- (A,B)")
@@ -139,20 +169,14 @@ class GASA:
         n_rat_A.Display_log()
         n_rat_B.Display_log()
 
-        new_rat_1 = self.SA_deal(rat_A, n_rat_A, T)
-        new_rat_2 = self.SA_deal(rat_B, n_rat_B, T)
+        self.rat_list[index_a] = self.SA_deal(rat_A, n_rat_A, T)
+        self.rat_list[index_b] = self.SA_deal(rat_B, n_rat_B, T)
 
-        return new_rat_1, new_rat_2
-
-    def Mutate(self, ratA, ratB, T):
-        logging.debug("------RAT Mutate Begin------(%s, %s)" % (ratA.name, ratB.name))
-        n_ratA = ratA.Copy()
-        n_ratB = ratB.Copy()
-        n_ratA.Mutate(self.mutate_rate)
-        n_ratB.Mutate(self.mutate_rate)
-        new_rat_A = self.SA_deal(ratA, n_ratA, T)
-        new_rat_B = self.SA_deal(ratB, n_ratB, T)
-        return  new_rat_A, new_rat_B
+    def Mutate(self, rat, T, index):
+        logging.debug("------RAT Mutate Begin------(%s)" % rat.name)
+        n_rat = rat.Copy()
+        n_rat.Mutate(self.mutate_rate)
+        self.rat_list[index] = self.SA_deal(rat, n_rat, T)
 
     def Select(self):
         if len(self.rat_list) == 0:
@@ -227,17 +251,21 @@ class GASA:
         parent_rat.Fitness_calculation()
         son_rat.Fitness_calculation()
         delta = parent_rat.fitness - son_rat.fitness
+        logging.debug("Delta: %s\tParent: %s\tSon: %s" % (delta,parent_rat.fitness,son_rat.fitness))
         if delta > 0:
             logging.debug("Delta > 0, Replace!")
+            del parent_rat
             return son_rat
         else:
             logging.debug("Delta < 0, Prob!")
             prob = np.exp(delta / T)
             if prob > random.random():
                 logging.debug("Prob YES, Replace!")
+                del parent_rat
                 return son_rat
             else:
                 logging.debug("Prob NO, Reserve!")
+                del son_rat
                 return parent_rat
 
 

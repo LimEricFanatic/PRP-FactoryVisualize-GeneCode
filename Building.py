@@ -50,8 +50,9 @@ class Factory(Building):
     def Get_position(self, time):
         m_position = Point2D(0, 0)
         m_position = self.position + m_position
-        m_position.x = m_position.x + self.direction.x * time
-        m_position.y = m_position.y + self.direction.y * time
+        m_position.x = m_position.x + self.direction.x * time * self.velocity
+        m_position.y = m_position.y + self.direction.y * time * self.velocity
+        # print("Get Position: %s" % str(m_position))
         return m_position
 
     def direction_normalization(self):

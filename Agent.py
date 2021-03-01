@@ -8,7 +8,7 @@ class Agent:
     def __init__(self, name="Agent", start_depot=Depot()):
         self.name = name
         self.start_depot = start_depot
-        self.position = Point2D(0, 0)
+        self.position = start_depot.position
 
     def Copy(self):
         n_Agent = Agent()
@@ -27,10 +27,10 @@ class GoodAgent(Agent):
 
     def __init__(self, name="GoodAgent", start_depot=Depot()):
         Agent.__init__(self, name, start_depot)
-        self.velocity = 5
+        self.velocity = 8
         self.com_max = 50
-        self.travel_cost = 10
-        self.repair_cost = 10
+        self.travel_cost = 10   # per distance
+        self.repair_cost = 100
         self.com_num = self.com_max
 
     def Copy(self):
@@ -56,10 +56,10 @@ class BadAgent(Agent):
 
     def __init__(self, name="BadAgent", start_depot=Depot()):
         Agent.__init__(self, name, start_depot)
-        self.velocity = 3
+        self.velocity = 5
         self.com_max = 30
         self.travel_cost = 5    # per distance
-        self.repair_cost = 5
+        self.repair_cost = 50
         self.com_num = self.com_max
 
     def Copy(self):

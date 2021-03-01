@@ -14,6 +14,6 @@ env.Initialize()
 env.displayEnvironment()
 
 ### 遗传算法 ###
-m_GASA = GASA(env, 20, 30, 0.5, 0.02, 1000, 1, 0.7)
+m_GASA = GASA(env, 50, 80, 0.4, 0.02, 1000, 1, 0.7)
 m_GASA.Run()
 m_GASA.Display()
